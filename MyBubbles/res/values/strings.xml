@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">myBubbles</string>
+    <string name="welcome">Welcome!</string>
+    <string name="action_settings">Settings</string>
+    <string name="instructions">Free the animals by popping out their bubbles</string>
+    <string name="play_button">Play</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="settings_background_color_label">Choose Background Color:</string>
+</resources>
