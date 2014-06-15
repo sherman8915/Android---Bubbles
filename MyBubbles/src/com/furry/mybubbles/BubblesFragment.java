@@ -50,25 +50,19 @@ import com.furry.mybubbles.R;
  * 
  * 
  */
-public class BubblesFragment extends Fragment implements BubbleView.OnBubbleInteractionListener{
+public class BubblesFragment extends Fragment{
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
+	private static final String ARG_PARAM1 = "gameStrategy";
 	
-	//Object pool to recycle bubbleView objects as they are created and removed
-	private ObjectPool<BubbleView> mBubbleViewPool;
-
+	
+	//Game strategy to be used in the fragment game interaction calls
 	private GameStrategy mGameStrategy;
 	
 	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
+	private String mParamGameStrategy;
 	
-	private Bitmap mBitmap;
-	
-	//hash map that maps Bubble types to their instantiated bitmaps
-	private Map<BubbleView.BubbleType,Bitmap> mBitmaps=new Hashtable<BubbleView.BubbleType,Bitmap>();
+
 	
 	private RelativeLayout mFrame;
 	private Activity mContext;
@@ -96,11 +90,10 @@ public class BubblesFragment extends Fragment implements BubbleView.OnBubbleInte
 	 * @return A new instance of fragment BubblesFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
-	public static BubblesFragment newInstance(String param1, String param2) {
+	public static BubblesFragment newInstance(String gameStrategy) {
 		BubblesFragment fragment = new BubblesFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
+		args.putString(ARG_PARAM1, gameStrategy);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -113,34 +106,20 @@ public class BubblesFragment extends Fragment implements BubbleView.OnBubbleInte
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		
-		for (BubbleView.BubbleType t: BubbleView.BubbleType.values()){
-			mBitmap = BitmapFactory.decodeResource(getResources(), t.getDrawHandle());
-			mBitmaps.put(t, mBitmap);
-		}
 		mFrame = (RelativeLayout) this.getActivity().findViewById(R.id.frame);
-		
 		mContext=this.getActivity();
-		BubbleViewFactory mFactory=new BubbleViewFactory(mContext,mFrame,this,mBitmaps);
-		new GenericObjectPool<BubbleView>(mFactory);
-		mBubbleViewPool=new GenericObjectPool<BubbleView>(mFactory);
-		try {
-			//mBubbleViewPool.addObject();
-			//mBubbleViewPool.addObject();
-			//mBubbleViewPool.addObject();
-			//mBubbleViewPool.addObject();
-			//mBubbleViewPool.addObject();
-		} catch (Exception e){
-			throw new RuntimeException("Unable to borrow bubble from pool" + e.toString());
-		}
+		
+		if (this.mParamGameStrategy.equals(GameStrategyBase.strategyName))
+			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
+		else
+			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-			// Load basic bubble Bitmap
+			mParamGameStrategy = getArguments().getString(ARG_PARAM1);
 			
 			
 		}
@@ -267,23 +246,8 @@ public class BubblesFragment extends Fragment implements BubbleView.OnBubbleInte
 	}
 	
 	
-	//Remove view from frame and Re-allocates view back to the pool
-	@Override
-	public void stopBubble(BubbleView bubble){
-		//log("Bubble stopped");
-		mFrame.post(new MyPostRunnable(bubble));
-		
-		
-	}
 	
-	//randomly select and returns the bubble type
-	public BubbleView.BubbleType chooseBubbleType(){
-		BubbleView.BubbleType[] values=BubbleView.BubbleType.values();
-		int i=(int) Math.round(Math.random()*((double) values.length-1));
-		String message="Bubble type choosen "+values[i].toString()+" index of "+Integer.toString(i);
-		Log.d(MainActivity.LOG_TAG, message);
-		return values[i];
-	}
+
 	
 	// Set up GestureDetector
 	private void setupGestureDetector() {
@@ -329,73 +293,15 @@ public class BubblesFragment extends Fragment implements BubbleView.OnBubbleInte
 
 			@Override
 			public boolean onSingleTapConfirmed(MotionEvent event) {
-
-				Log.d(MainActivity.LOG_TAG, "onSingleTapConfirmed in BubblesFragment Frame");
-				// TODO - Implement onSingleTapConfirmed actions.
-				// You can get all Views in mFrame using the
-				// ViewGroup.getChildCount() method
-				Boolean popped=false;
-				for (int i=0;i<mFrame.getChildCount();i++){
-					BubbleView childBubbleView= (BubbleView) mFrame.getChildAt(i);
-					if (childBubbleView.isShown() && childBubbleView.intersects(event.getX(), event.getY())){
-						popped=true;
-						mSoundPool.play(mSoundID, mStreamVolume, mStreamVolume, 1, 0, 1.0f);
-						childBubbleView.stop(popped);
-
-					}
-				}
-				if (!popped){
-					addBubbleOnFrame(event.getX(),event.getY());
-				}
-					
-				
+				//Call delegated to the game strategy assigned to the fragment
+				BubblesFragment.this.mGameStrategy.singleTapBehavior(event.getX(),event.getY());
 				
 				return true;
 			}
 		});
 	}
 	
-	/**
-	 * Add new bubble object on frame
-	 * @param x - x coordinate
-	 * 		  y - y coordinate
-	 */
-	private void addBubbleOnFrame(float x,float y){
-		BubbleView newBubble=null;
-		try{
-			newBubble=mBubbleViewPool.borrowObject();
-			
-		} catch (Exception e){
-			throw new RuntimeException("Unable to borrow buffer from pool" + e.toString());
-		}
-		newBubble.setPosition(x, y);
-		mFrame.addView(newBubble);
-		newBubble.start();
-	}
-	
-	//class used to post runnables back to UI thread
-	private class MyPostRunnable implements Runnable{
-	
-		BubbleView mBubble;
-		
-		//construct runnable with the bubble to remove
-		public MyPostRunnable(BubbleView bubble){
-			mBubble=bubble;
-		}
-		
-		@Override
-		public void run() {
-			
-			// TODO - Remove the BubbleView from mFrame					
-			mFrame.removeView(mBubble);
-			try {
-				mBubbleViewPool.returnObject(mBubble);
-			} catch (Exception e){
-				throw new RuntimeException("Unable to return bubble to pool" + e.toString());
-			}
-		
-		}
-	}
+
 		
 		
 }

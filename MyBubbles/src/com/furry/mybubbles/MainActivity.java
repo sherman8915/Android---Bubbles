@@ -4,7 +4,6 @@ import com.furry.mybubbles.R;
 
 import android.support.v7.app.ActionBarActivity;
 
-
 import android.app.ActionBar;
 //import android.support.v4.app.Fragment;
 //import android.support.v4.app.FragmentManager;
@@ -39,7 +38,7 @@ public class MainActivity extends ActionBarActivity implements MainMenuFragment.
 		setContentView(R.layout.activity_main);
 		fragmentManager=this.getFragmentManager();
 		mainMenuFragment=MainMenuFragment.newInstance("empty", "empty");
-		bubblesFragment=BubblesFragment.newInstance("empty", "empty");
+		bubblesFragment=BubblesFragment.newInstance(GameStrategyBase.strategyName);
 		
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()

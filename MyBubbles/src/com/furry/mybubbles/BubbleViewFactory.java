@@ -36,19 +36,21 @@ public class BubbleViewFactory extends BasePooledObjectFactory<BubbleView> {
 	private Map<BubbleView.BubbleType,Bitmap> mBitmaps;
 	
 	// Object interaction listener
-	private BubbleView.OnBubbleInteractionListener mInteractionListener;
+	private GameStrategy mGameStrategy;
 	
 	// Random generator
 	private Random r=new Random();
 	
-	public BubbleViewFactory(Activity mContext, RelativeLayout mFrame, 
-			BubbleView.OnBubbleInteractionListener interactionListener,
+	public BubbleViewFactory(
+			Activity mContext, 
+			RelativeLayout mFrame, 
+			GameStrategy gameStrategy,
 			Map<BubbleType, Bitmap> mBitmaps) {
 		super();
 		this.mContext = mContext;
 		this.mFrame = mFrame;
 		this.mBitmaps = mBitmaps;
-		this.mInteractionListener=interactionListener;
+		this.mGameStrategy=gameStrategy;
 	}
 
 	/*
@@ -58,7 +60,7 @@ public class BubbleViewFactory extends BasePooledObjectFactory<BubbleView> {
 	 */
 	public BubbleView create(){
 		BubbleView.BubbleType bubbleType=chooseBubbleType();
-		BubbleView newBubbleView=new BubbleView(mContext,mFrame,mInteractionListener,mBitmaps.get(bubbleType),0,0);
+		BubbleView newBubbleView=new BubbleView(mContext,mFrame,mGameStrategy,mBitmaps.get(bubbleType),0,0);
 		return newBubbleView;
 	}
 	

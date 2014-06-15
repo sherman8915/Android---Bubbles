@@ -61,6 +61,8 @@ public class BubbleView extends View {
 		
 	};
 	
+	public static enum Action{START,STOP};
+	
 	private final Paint mPainter = new Paint();
 	private ScheduledFuture<?> mMoverFuture;
 	private int mScaledBitmapWidth;
@@ -78,16 +80,16 @@ public class BubbleView extends View {
 	private long mRotate, mDRotate;
 	// Display dimensions
 	private int mDisplayWidth, mDisplayHeight;
-	private OnBubbleInteractionListener mInteractionListener;
+	private GameStrategy mGameStrategy;
 	
-	public BubbleView(Context context,RelativeLayout frame,OnBubbleInteractionListener interactionListener,Bitmap bitmap,float x, float y) {
+	public BubbleView(Context context,RelativeLayout frame,GameStrategy gameStrategy,Bitmap bitmap,float x, float y) {
 		super(context);
 		//log("Creating Bubble at: x:" + x + " y:" + y);
 		
 		
 		mBitmap=bitmap;
 		mFrame=frame;
-		mInteractionListener=interactionListener;
+		mGameStrategy=gameStrategy;
 		
 		// Create a new random number generator to
 		// randomize size, rotation, speed and direction
@@ -243,7 +245,7 @@ public class BubbleView extends View {
 		// This work will be performed on the UI Thread
 		if (null != mMoverFuture) {
 			if (mMoverFuture.cancel(true)) {
-				this.mInteractionListener.stopBubble(this);
+				this.mGameStrategy.stopBubble(this);
 			}
 		}
 			
