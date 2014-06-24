@@ -108,11 +108,7 @@ public class BubblesFragment extends Fragment{
 		
 		mFrame = (RelativeLayout) this.getActivity().findViewById(R.id.frame);
 		mContext=this.getActivity();
-		
-		if (this.mParamGameStrategy.equals(GameStrategyBase.strategyName))
-			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
-		else
-			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
+
 	}
 	
 	@Override
@@ -165,7 +161,7 @@ public class BubblesFragment extends Fragment{
 		super.onResume();
 		// Manage bubble popping sound
 		// Use AudioManager.STREAM_MUSIC as stream type
-
+		BubblesFragment.this.mFrame.setVisibility(ViewGroup.INVISIBLE);
 		mAudioManager = (AudioManager) this.getActivity().getSystemService(Activity.AUDIO_SERVICE);
 
 		mStreamVolume = (float) mAudioManager
@@ -175,12 +171,16 @@ public class BubblesFragment extends Fragment{
 		// TODO - make a new SoundPool, allowing up to 10 streams 
 		mSoundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
 
-		// TODO - set a SoundPool OnLoadCompletedListener that calls setupGestureDetector()
+		// TODO - set a SoundPool OnLoadCompletedListener that setup the game strategy with the initialized sound pool
 		mSoundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
 			@Override
 			public void onLoadComplete(SoundPool soundPool, int sampleId,int status) {
 				if (0 == status) {
 					//setupGestureDetector();
+					BubblesFragment.this.updateGameStrategy();
+					BubblesFragment.this.mGameStrategy.initialize();
+					BubblesFragment.this.mFrame.setVisibility(ViewGroup.VISIBLE);
+
 				}
 			}
 		});
@@ -188,11 +188,7 @@ public class BubblesFragment extends Fragment{
 		// TODO - load the sound from res/raw/bubble_pop.wav
 		mSoundID = mSoundPool.load(this.getActivity(), R.raw.bubble_pop, 1);
 		
-		CharSequence text = "Tap to start!";
-		int duration = Toast.LENGTH_SHORT;
 
-		Toast toast = Toast.makeText(this.mContext, text, duration);
-		toast.show();
 				
 	}
 	
@@ -245,11 +241,22 @@ public class BubblesFragment extends Fragment{
 		public void onBubblesFragmentInteraction(Uri uri);
 	}
 	
+	/**
+	 * Updates the game strategy
+	 */
+	private void updateGameStrategy(){
+		//Setup the game strategy
+		if (BubblesFragment.this.mParamGameStrategy.equals(GameStrategyBase.strategyName))
+			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
+		else if (BubblesFragment.this.mParamGameStrategy.equals(GameStrategyCountdown.strategyName))
+			mGameStrategy=new GameStrategyCountdown(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
+		else
+			mGameStrategy=new GameStrategyBase(mContext,mFrame,mSoundPool,mStreamVolume,mSoundID);
+	}
 	
-	
-
-	
-	// Set up GestureDetector
+	/**
+	 * Setup the gestures detector for the fragments frame
+	 */
 	private void setupGestureDetector() {
 
 		mGestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {

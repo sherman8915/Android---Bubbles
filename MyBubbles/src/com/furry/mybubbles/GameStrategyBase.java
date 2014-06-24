@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.SoundPool;
 
+
 /**
  * 
  * @author sherman1
@@ -45,6 +46,7 @@ public class GameStrategyBase extends GameStrategy{
 	// Audio volume
 	private float mStreamVolume;
 	
+	
 	public GameStrategyBase(
 			Activity context,
 			RelativeLayout frame,
@@ -67,6 +69,11 @@ public class GameStrategyBase extends GameStrategy{
 		BubbleViewFactory mFactory=new BubbleViewFactory(mContext,mFrame,this,mBitmaps);
 		new GenericObjectPool<BubbleView>(mFactory);
 		mBubbleViewPool=new GenericObjectPool<BubbleView>(mFactory);
+
+	}
+	
+	@Override
+	public void initialize(){
 		try {
 			//mBubbleViewPool.addObject();
 			//mBubbleViewPool.addObject();
@@ -76,11 +83,7 @@ public class GameStrategyBase extends GameStrategy{
 		} catch (Exception e){
 			throw new RuntimeException("Unable to borrow bubble from pool" + e.toString());
 		}
-	}
-	
-	@Override
-	public void initialize(){
-		
+
 	}
 	
 	@Override
@@ -136,7 +139,17 @@ public class GameStrategyBase extends GameStrategy{
 		newBubble.start();
 	}
 	
+	@Override
+	public void updateSoundPool(SoundPool soundPool){
+		this.mSoundPool=soundPool;
+	}
 	
+	/**
+	 * Distributes the bubbles on screen
+	 */
+	private void distributeBubbles(){
+		
+	}
 	/**
 	 * 
 	 * @brief Runnable class that posts code to UI to act on a specific object

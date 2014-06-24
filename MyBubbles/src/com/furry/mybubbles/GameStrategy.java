@@ -7,6 +7,8 @@ import com.furry.mybubbles.BubbleView.Action;
 import android.view.ViewGroup;
 import android.view.View;
 import android.content.Context;
+import android.media.SoundPool;
+
 /**
  * 
  * @author sherman1
@@ -38,6 +40,12 @@ public abstract class GameStrategy {
 	 * Stop Bubble behavior
 	 */
 	public abstract void stopBubble(BubbleView v);
+	
+	/**
+	 * updates sound pool
+	 * @param soundPool
+	 */
+	public abstract void updateSoundPool(SoundPool soundPool);
 	
 	public GameStrategy(){
 		

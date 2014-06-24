@@ -38,7 +38,7 @@ public class MainActivity extends ActionBarActivity implements MainMenuFragment.
 		setContentView(R.layout.activity_main);
 		fragmentManager=this.getFragmentManager();
 		mainMenuFragment=MainMenuFragment.newInstance("empty", "empty");
-		bubblesFragment=BubblesFragment.newInstance(GameStrategyBase.strategyName);
+		bubblesFragment=BubblesFragment.newInstance(GameStrategyCountdown.strategyName);
 		
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
