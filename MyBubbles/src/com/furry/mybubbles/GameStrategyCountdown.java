@@ -157,17 +157,15 @@ public class GameStrategyCountdown extends GameStrategy{
 	/**
 	 * Tests for victory conditions
 	 */
-	private void testVictory(){
+	private boolean testVictory(){
 		//Log.d(MainActivity.LOG_TAG, "Bubbles remaining: "+(mFrame.getChildCount()));
 		if (mFrame.getChildCount()==0){
 			//Post victory message for UI
 			Log.d(MainActivity.LOG_TAG, "Victory achieved!!!");
-			
-			int duration = Toast.LENGTH_SHORT;
+			return true;
 
-			Toast toast = Toast.makeText(this.mContext, WIN_MESSAGE, duration);
-			toast.show();
 		}
+		return false;
 	}
 	
 	@Override
@@ -216,7 +214,13 @@ public class GameStrategyCountdown extends GameStrategy{
 				} catch (Exception e){
 					throw new RuntimeException("Unable to return bubble to pool" + e.toString());
 				}
-				GameStrategyCountdown.this.testVictory();
+				if (GameStrategyCountdown.this.testVictory()){
+					int duration = Toast.LENGTH_SHORT;
+
+					Toast toast = Toast.makeText(GameStrategyCountdown.this.mContext, WIN_MESSAGE, duration);
+					toast.show();
+					GameStrategyCountdown.this.mContext.onBackPressed();
+				}
 				
 			}
 		

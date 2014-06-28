@@ -21,6 +21,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.os.Build;
 import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 
 
 public class MainActivity extends ActionBarActivity implements MainMenuFragment.OnMainMenuInteractionListener,
@@ -69,6 +72,7 @@ public class MainActivity extends ActionBarActivity implements MainMenuFragment.
 	}
 
 	
+
 	public void onMainMenuInteraction(Uri uri){
 		Log.d(LOG_TAG, "Interaction propagated from MainMenuFragment");
 	}
@@ -99,5 +103,7 @@ public class MainActivity extends ActionBarActivity implements MainMenuFragment.
 			
 		
     }
+	
 
+	
 }

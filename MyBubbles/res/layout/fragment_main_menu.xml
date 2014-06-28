@@ -3,7 +3,6 @@
     android:id="@+id/main_menu_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/thumbnail"
     tools:context="com.furry.mybubbles.MainMenuFragment" >
 
     <!-- TODO: Update blank fragment layout -->
